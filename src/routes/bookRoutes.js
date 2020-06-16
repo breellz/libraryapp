@@ -1,57 +1,69 @@
 const express = require('express');
+const { MongoClient, ObjectID } = require('mongodb');
+const debug = require('debug')('app:bookRoutes');
 
 const bookRouter = express.Router();
 
 const router = (nav) => {
-  const books = [{
-    title: 'War and Peace',
-    genre: 'Historical Fiction',
-    author: 'Lev Nikolayeky Tolstoy',
-    read: false
-  }, {
-    title: 'Les Miserables',
-    genre: 'Historical Fiction',
-    author: 'Victor Hugo',
-    read: false
-  }, {
-    title: 'The time machine',
-    genre: 'Science Fiction',
-    author: 'Jules Verne',
-    read: false
-  }, {
-    title: 'The dark world',
-    genre: 'Fantasy',
-    author: 'Bassit Owolabi',
-    read: false
-  }, {
-    title: 'The responsive electromaniac',
-    genre: 'Fiction',
-    author: 'Lev Tolstoy',
-    read: false
-  }
-  ];
   bookRouter.route('/')
     .get((req, res) => {
-      res.render(
-        'booklistview',
-        {
-          title: 'Goodreads',
-          nav,
-          books
+      const url = 'mongodb://localhost:27017';
+      const dbName = 'libraryApp';
+
+      (async function mongo() {
+        let client;
+        try {
+          client = await MongoClient.connect(url);
+          debug('connected to the server correctly');
+
+          const db = client.db(dbName);
+
+          const col = await db.collection('books');
+          const books = await col.find().toArray();
+          res.render(
+            'booklistview',
+            {
+              title: 'libraryApp',
+              nav,
+              books
+            }
+          );
+        } catch (err) {
+          debug(err.stack);
         }
-      );
+        client.close();
+      }());
     });
   bookRouter.route('/:id')
     .get((req, res) => {
       const { id } = req.params;
-      res.render(
-        'bookview',
-        {
-          title: 'Goodreads',
-          nav,
-          book: books[id]
+      const url = 'mongodb://localhost:27017';
+      const dbName = 'libraryApp';
+
+      (async function mongo() {
+        let client;
+        try {
+          client = await MongoClient.connect(url);
+          debug('connected to the server correctly');
+
+          const db = client.db(dbName);
+
+          const col = await db.collection('books');
+
+          const book = await col.findOne({ _id: new ObjectID(id) });
+          debug(book);
+          res.render(
+            'bookview',
+            {
+              title: 'libraryApp',
+              nav,
+              book
+            }
+          );
+        } catch (err) {
+          debug(err.stack);
         }
-      );
+      }());
     });
   return bookRouter;
 };
