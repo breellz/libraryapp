@@ -8,11 +8,13 @@ const books = [{
   title: 'War and Peace',
   genre: 'Historical Fiction',
   author: 'Lev Nikolayeky Tolstoy',
+  bookId: 656,
   read: false
 }, {
   title: 'Les Miserables',
   genre: 'Historical Fiction',
   author: 'Victor Hugo',
+  bookId: 24280,
   read: false
 }, {
   title: 'The time machine',
@@ -32,7 +34,7 @@ const books = [{
 }
 ];
 
-const router = (nav) => {
+const router = () => {
   adminRouter.route('/')
     .get((req, res) => {
       const url = 'mongodb://localhost:27017';
