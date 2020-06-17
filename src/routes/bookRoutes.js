@@ -5,6 +5,13 @@ const debug = require('debug')('app:bookRoutes');
 const bookRouter = express.Router();
 
 const router = (nav) => {
+  bookRouter.use((req, res, next) => {
+    if (req.user) {
+      next();
+    } else {
+      res.redirect('/');
+    }
+  });
   bookRouter.route('/')
     .get((req, res) => {
       const url = 'mongodb://localhost:27017';
